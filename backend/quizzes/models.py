@@ -10,6 +10,7 @@ class Quiz(models.Model):
 	
 	class Meta:
 		verbose_name_plural = "Quizzes"
+		ordering = ['id']
 
 	def __str__(self):
 		return self.title
@@ -19,7 +20,7 @@ class Question(models.Model):
 	prompt = models.CharField(max_length=255, blank=True, default='')
 
 	class Meta:
-		ordering = ['order', ]
+		ordering = ['id']
 
 	def __str__(self):
 		return self.prompt
@@ -28,9 +29,6 @@ class Answer(models.Model):
 	text = models.CharField(max_length=255)
 	question = models.ForeignKey(Question, on_delete=models.DO_NOTHING)
 	correct = models.BooleanField(default=False)
-
-	class Meta:
-		ordering = ['order', ]
 
 	def __str__(self):
 		return self.text
