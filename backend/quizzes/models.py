@@ -17,7 +17,7 @@ class Quiz(models.Model):
 
 class Question(models.Model):
 	quiz = models.ForeignKey(Quiz, on_delete=models.DO_NOTHING)
-	prompt = models.CharField(max_length=255, blank=True, default='')
+	prompt = models.CharField(max_length=255, default='')
 
 	class Meta:
 		ordering = ['id']
