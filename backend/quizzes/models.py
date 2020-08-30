@@ -27,7 +27,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
 	text = models.CharField(max_length=255)
-	question = models.ForeignKey(Question, on_delete=models.DO_NOTHING)
+	question = models.ForeignKey(Question, related_name='answers', on_delete=models.DO_NOTHING)
 	correct = models.BooleanField(default=False)
 
 	def __str__(self):
