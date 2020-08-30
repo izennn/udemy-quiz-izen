@@ -2,46 +2,48 @@ from rest_framework import serializers
 
 from . import models
 
-
 class QuizSerializer(serializers.ModelSerializer):
-	# questions = serializers.HyperlinkedRelatedField(
-	# 	many=True,
-	# 	read_only=True,
-	# 	view_name="apiv2:question-detail"
-	# )
-	questions =  serializers.HyperlinkedIdentityField(view_name='apiv2:question-list')
+	questions = serializers.HyperlinkedRelatedField(
+		many=True,
+		read_only=True,
+		view_name='apiv2:question-detail'
+	)
 
 	class Meta:
-		fields = (
+		fields = [
 			'title',
 			'author',
 			'total_questions',
 			'questions'
-        )
+		]
 		model = models.Quiz
 
+class AnswerSerializer(serializers.ModelSerializer):
+	class Meta:
+		fields = [
+			'id',
+			'text',
+			'correct',
+		]
+		model = models.Answer
+
 class QuestionSerializer(serializers.ModelSerializer):
-	answers = serializers.HyperlinkedRelatedField(
-		many=True,
+	# answers = serializers.HyperlinkedRelatedField(
+	# 	many=True,
+	# 	read_only=True,
+	# 	view_name="apiv2:answer-detail",
+	# )
+	answers = AnswerSerializer(
 		read_only=True,
-		view_name="apiv2:answer-detail",
+		many=True
 	)
 
 	class Meta:
-		fields = (
+		fields = [
 			'id',
             'quiz',
 			'prompt',
 			'answers'
-        )
+		]
 		model = models.Question
 
-class AnswerSerializer(serializers.ModelSerializer):
-	class Meta:
-		fields = (
-			'id',
-			'text',
-			'correct',
-			'question'
-		)
-		model = models.Answer
