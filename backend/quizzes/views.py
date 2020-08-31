@@ -70,7 +70,13 @@ class RetrieveUpdateDestroyAnswer(generics.RetrieveUpdateDestroyAPIView):
 class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
-	pagination_class = None
+	@property
+	def paginator(self):
+		self._paginator = super(QuizViewSet, self).paginator
+		if self.action != 'questions':
+			self._paginator = None
+		return self._paginator
+	# pagination_class = None
 
 	@action(detail=True,methods=['get'])
 	def questions(self, request, pk=None):
