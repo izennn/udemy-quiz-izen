@@ -71,13 +71,14 @@ class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
 
-	@action(detail=True,methods=['get'])
+	@action(detail=True,methods=['get']) # NOTE: default pagination does not work on ad hoc methods
 	def questions(self, request, pk=None):
 		questions = models.Question.objects.filter(quiz_id=pk) # grab all questions under this quiz
+
 		serializer = serializers.QuestionSerializer(
 			questions,
 			many=True
-		)
+		)		
 		return Response(serializer.data)
 
 class QuestionViewSet(viewsets.ModelViewSet):
