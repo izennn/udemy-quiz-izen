@@ -70,6 +70,7 @@ class RetrieveUpdateDestroyAnswer(generics.RetrieveUpdateDestroyAPIView):
 class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
+	pagination_class = None
 
 	@action(detail=True,methods=['get'])
 	def questions(self, request, pk=None):
