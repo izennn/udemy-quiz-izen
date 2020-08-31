@@ -71,9 +71,15 @@ class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
 
-	@action(detail=True,methods=['get']) # NOTE: default pagination does not work on ad hoc methods
+	@action(detail=True,methods=['get'])
 	def questions(self, request, pk=None):
 		questions = models.Question.objects.filter(quiz_id=pk) # grab all questions under this quiz
+
+		self.pagination_class.page_size = 1 # default pagination may not apply to ad hoc methods
+		page = self.paginate_queryset(questions)
+		if page is not None: # if pages appear
+			serializer = serializers.QuestionSerializer(page, many=True)
+			return self.get_paginated_response(serializer.data)
 
 		serializer = serializers.QuestionSerializer(
 			questions,
