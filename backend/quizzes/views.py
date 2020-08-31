@@ -78,8 +78,6 @@ class QuizViewSet(viewsets.ModelViewSet):
 			questions,
 			many=True
 		)
-		print("Inside quiz view set, related questions: ")
-		print(serializer.data)
 		return Response(serializer.data)
 
 class QuestionViewSet(viewsets.ModelViewSet):

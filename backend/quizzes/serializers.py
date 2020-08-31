@@ -28,11 +28,6 @@ class AnswerSerializer(serializers.ModelSerializer):
 		model = models.Answer
 
 class QuestionSerializer(serializers.ModelSerializer):
-	# answers = serializers.HyperlinkedRelatedField(
-	# 	many=True,
-	# 	read_only=True,
-	# 	view_name="apiv2:answer-detail",
-	# )
 	answers = AnswerSerializer(
 		read_only=True,
 		many=True
