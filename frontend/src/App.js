@@ -1,6 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import ChooseQuiz from './components/ChooseQuiz';
 import QuizBody from './containers/QuizBody';
+
 import { Header, Dimmer, Loader } from 'semantic-ui-react';
 
 const hostname = 'http://127.0.0.1:8000';
@@ -12,16 +15,8 @@ class App extends React.Component {
 		this.state = {
 			url_header: `${hostname}${apiv}`,
 			quizzes: [],
-			quiz_chosen: undefined,
 			isFetchingQuizzes: true
 		}
-		this.setQuizChosen = this.setQuizChosen.bind(this);
-	}
-
-	setQuizChosen = (quiz_id) => {
-		this.setState({
-			quiz_chosen: quiz_id
-		})
 	}
 
 	async componentDidMount() {
@@ -43,18 +38,18 @@ class App extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		const { quiz_chosen } = this.state
 	}
 
 	render() {
-		const { quizzes, isFetchingQuizzes, quiz_chosen } = this.state
+		const { chosenQuizId } = this.props;
+		const { quizzes, isFetchingQuizzes, } = this.state;
+
 		const overallAppStyle = {
 			height: '100%', 
 			width: '100%', 
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'flex-start',
-				// border: '1px solid blue'
 		}
 
 		return (
@@ -62,22 +57,32 @@ class App extends React.Component {
 				<Header 
 					as='h1' 
 					style={{textAlign: 'center'}}
-					content={quiz_chosen === undefined ? "Choose Quiz" : "Quiz Website"}
+					content={chosenQuizId === undefined ? "Choose Quiz" : "Quiz Website"}
 				/>
 				<Dimmer active={isFetchingQuizzes} inverted>
 					<Loader inverted>Fetching Quizzes</Loader>
 				</Dimmer>
-				{ !isFetchingQuizzes &&
+				{ (!isFetchingQuizzes && chosenQuizId === undefined) ?
 					<ChooseQuiz 
 						quizzes={quizzes} 
-						setQuizChosen={() => this.setQuizChosen()}
-					/>				
+					/> : 
+					<div>
+						Chosen quiz: {chosenQuizId}
+					</div>
 				}
-
 				{/* <QuizBody /> */}
 			</div>       
 		);    
 	}
 }
 
-export default App;
+const mapStateToProps = (state) => {
+	return {
+		chosenQuizId: state.chosenQuizId
+	};
+}
+
+export default connect(
+	mapStateToProps, 
+	null
+)(App);

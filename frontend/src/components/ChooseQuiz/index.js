@@ -1,15 +1,18 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { updateChosenQuizId } from '../../redux/ActionCreators';
+
 import { Card, Header, } from 'semantic-ui-react';
 
 const RenderQuizCards = (props) => {
-	const { quizzes } = props
+	const { quizzes, updateChosenQuizId } = props
 	
 	return (
 		<React.Fragment>
 			{ 	
 				quizzes.map((quiz) => {
 					return (
-						<Card key={quiz.id}>
+						<Card key={quiz.id} onClick={() => updateChosenQuizId(quiz.id)}>
 							<Card.Content>
 								<Card.Header>{quiz.title}</Card.Header>
 								<Card.Meta>
@@ -32,7 +35,7 @@ const RenderQuizCards = (props) => {
 
 class ChooseQuiz extends React.Component {
 	render() {
-		const { quizzes, setQuizChosen } = this.props;
+		const { quizzes, updateChosenQuizId } = this.props;
 
 		return (
 			<div
@@ -45,11 +48,23 @@ class ChooseQuiz extends React.Component {
 				}}
 			>
 				<div className="cards-div" style={{padding: '1em'}}>
-					{ quizzes !== undefined && <RenderQuizCards quizzes={quizzes} />}
+					{ quizzes !== undefined && 
+						<RenderQuizCards 
+							quizzes={quizzes} 
+							updateChosenQuizId={updateChosenQuizId}
+						/>
+					}
 				</div>
 			</div>
 		);
 	}
 }
 
-export default ChooseQuiz;
+const mapDispatchToProps = (dispatch) => ({
+	updateChosenQuizId: (newQuizId) => dispatch(updateChosenQuizId(newQuizId))
+})
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(ChooseQuiz);
