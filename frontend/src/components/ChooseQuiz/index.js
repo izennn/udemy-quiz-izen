@@ -1,0 +1,54 @@
+import React from 'react';
+import { Card, Header, } from 'semantic-ui-react';
+
+const RenderQuizCards = (props) => {
+	const { quizzes } = props
+	
+	return (
+		<React.Fragment>
+			{ 	
+				quizzes.map((quiz) => {
+					return (
+						<Card key={quiz.id}>
+							<Card.Content>
+								<Card.Header>{quiz.title}</Card.Header>
+								<Card.Meta>
+									{`By ${quiz.author_fullname}`}
+								</Card.Meta>
+								<Card.Description>
+									{`Total questions: ${quiz.total_questions}`}
+								</Card.Description>
+							</Card.Content>
+							<Card.Content extra>
+								Created on {quiz.created_at.slice(0, 10)}
+							</Card.Content>
+						</Card>
+					);
+				})
+			}		
+		</React.Fragment>	
+	)
+}
+
+class ChooseQuiz extends React.Component {
+	render() {
+		const { quizzes, setQuizChosen } = this.props;
+
+		return (
+			<div
+				style = {{
+					height: '100%',
+					display: 'flex',
+					flexDirection: 'column',
+					overflowY: 'auto',
+				}}
+			>
+				<div className="cards-div">
+					{ quizzes !== undefined && <RenderQuizCards quizzes={quizzes} />}
+				</div>
+			</div>
+		);
+	}
+}
+
+export default ChooseQuiz;

@@ -9,13 +9,23 @@ import { unregister } from './serviceWorker';
 const target = document.querySelector('#root');
 document.body.style.overflow = 'hidden';
 
-const store = ConfigureStore()
+const store = ConfigureStore();
 
 class Index extends React.Component {
     render() {
         return (
             <Provider store={store}>
-			    <App />            
+                <div 
+                    style={{
+						width: '100vw',
+						height: '100vh',
+						paddingTop: '2em',
+						paddingLeft: '20%',
+						paddingRight: '20%',
+                    }}
+                >
+			        <App />            
+                </div>
             </Provider>
         );
     }

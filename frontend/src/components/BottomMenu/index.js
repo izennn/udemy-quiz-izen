@@ -32,7 +32,11 @@ class BottomMenu extends React.Component {
 
 		return (
 			<Menu>
-			<RenderMenuItems questionNum={questionNum} totalQuestions={totalQuestions} reviewList={reviewList} />
+				<RenderMenuItems 
+					questionNum={questionNum} 
+					totalQuestions={totalQuestions} 
+					reviewList={reviewList} 
+				/>
 			</Menu>
 		)
 	}
