@@ -38,12 +38,13 @@ class ChooseQuiz extends React.Component {
 			<div
 				style = {{
 					height: '100%',
+					width: '100%',
 					display: 'flex',
 					flexDirection: 'column',
 					overflowY: 'auto',
 				}}
 			>
-				<div className="cards-div">
+				<div className="cards-div" style={{padding: '1em'}}>
 					{ quizzes !== undefined && <RenderQuizCards quizzes={quizzes} />}
 				</div>
 			</div>
