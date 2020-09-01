@@ -9,11 +9,19 @@ class QuizSerializer(serializers.ModelSerializer):
 		view_name='apiv2:question-detail'
 	)
 
+	def getFullname(self, obj):
+		return obj.author.first_name + ' ' + obj.author.last_name
+
+	author_fullname = serializers.SerializerMethodField("getFullname")
+
 	class Meta:
 		fields = [
+			'id',
 			'title',
 			'author',
+			'author_fullname',
 			'total_questions',
+			'created_at',
 			'questions'
 		]
 		model = models.Quiz
