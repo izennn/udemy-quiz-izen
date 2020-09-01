@@ -1,6 +1,6 @@
 import * as ActionTypes from './ActionTypes';
 
-export const updateQuizId = (newQuizId) => ({
+export const updateChosenQuizId = (newQuizId) => ({
 	type: ActionTypes.UPDATE_CHOSEN_QUIZ_ID,
 	payload: {
 		newQuizId: newQuizId
