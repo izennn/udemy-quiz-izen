@@ -44,7 +44,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 	class Meta:
 		fields = [
 			'id',
-            'quiz',
+			'quiz',
 			'prompt',
 			'answers'
 		]

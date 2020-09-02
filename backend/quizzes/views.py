@@ -4,6 +4,7 @@ from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from quiz_api.pagination import PaginationWithPageNumber
 from . import models, serializers
 
 class ListCreateQuiz(generics.ListCreateAPIView):
@@ -70,19 +71,26 @@ class RetrieveUpdateDestroyAnswer(generics.RetrieveUpdateDestroyAPIView):
 class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
+
+	# @property
+	# def paginator(self):
+	# 	self._paginator = super(QuizViewSet, self).paginator
+	# 	if self.action != 'questions':
+	# 		self._paginator = None
+	# 	return self._paginator
+
 	@property
 	def paginator(self):
 		self._paginator = super(QuizViewSet, self).paginator
 		if self.action != 'questions':
 			self._paginator = None
 		return self._paginator
-	# pagination_class = None
 
 	@action(detail=True,methods=['get'])
 	def questions(self, request, pk=None):
-		questions = models.Question.objects.filter(quiz_id=pk) # grab all questions under this quiz
+		questions = models.Question.objects.filter(quiz_id=pk) 
 
-		self.pagination_class.page_size = 1 # default pagination may not apply to ad hoc methods
+		self.pagination_class.page_size = 1 
 		page = self.paginate_queryset(questions)
 		if page is not None: # if pages appear
 			serializer = serializers.QuestionSerializer(page, many=True)
