@@ -15,7 +15,9 @@ class App extends React.Component {
 		this.state = {
 			url_header: `${hostname}${apiv}`,
 			quizzes: [],
-			isFetchingQuizzes: true
+			question: undefined,
+			isFetchingQuizzes: true,
+			isFetchingQuestion: false
 		}
 	}
 
@@ -37,12 +39,42 @@ class App extends React.Component {
 		}
 	}
 
+	// fetches first paginated question under given quiz id
+	async fetchPaginatedQuestions(quiz_id) {
+		const { url_header } = this.state;
+
+		try {
+			const res = await fetch(`${url_header}/quizzes/${quiz_id}/questions/`)
+			const question = await res.json()
+			if (question !== undefined) {
+				this.setState({
+					question: question,
+					isFetchingQuestion: false
+				})
+			}
+		} catch(error) {
+			console.log(error)
+		}
+	}
+
 	componentDidUpdate(prevProps, prevState) {
+		// if quiz ID updated then fetch first paginated question 
+		if (prevProps.chosenQuizId !== this.props.chosenQuizId) {
+			this.setState({
+				isFetchingQuestion: true
+			})
+			this.fetchPaginatedQuestions(this.props.chosenQuizId)
+		}
 	}
 
 	render() {
 		const { chosenQuizId } = this.props;
-		const { quizzes, isFetchingQuizzes, } = this.state;
+		const { 
+			quizzes, 
+			question,
+			isFetchingQuizzes, 
+			isFetchingQuestion
+		} = this.state;
 
 		const overallAppStyle = {
 			height: '100%', 
@@ -65,12 +97,10 @@ class App extends React.Component {
 				{ (!isFetchingQuizzes && chosenQuizId === undefined) ?
 					<ChooseQuiz 
 						quizzes={quizzes} 
-					/> : 
-					<div>
-						Chosen quiz: {chosenQuizId}
-					</div>
+					/> : (!isFetchingQuestion && question !== undefined) ? 
+					<QuizBody />
+					: <div></div>
 				}
-				{/* <QuizBody /> */}
 			</div>       
 		);    
 	}
