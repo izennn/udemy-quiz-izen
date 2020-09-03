@@ -4,7 +4,6 @@ export const initialState = {
 	reviewList: [],
 	userAnswers: {},
 	chosenQuizId: undefined,
-	totalQuestions: 2
 }
 
 export const Reducer = (state = initialState, action) => {

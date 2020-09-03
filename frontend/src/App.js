@@ -15,6 +15,7 @@ class App extends React.Component {
 		this.state = {
 			url_header: `${hostname}${apiv}`,
 			quizzes: [],
+			totalQuestions: undefined,
 			question: undefined,
 			isFetchingQuizzes: true,
 			isFetchingQuestion: false
@@ -49,6 +50,7 @@ class App extends React.Component {
 			if (question !== undefined) {
 				this.setState({
 					question: question,
+					totalQuestions: question.count,
 					isFetchingQuestion: false
 				})
 			}
@@ -71,6 +73,7 @@ class App extends React.Component {
 		const { chosenQuizId } = this.props;
 		const { 
 			quizzes, 
+			totalQuestions,
 			question,
 			isFetchingQuizzes, 
 			isFetchingQuestion
@@ -98,7 +101,10 @@ class App extends React.Component {
 					<ChooseQuiz 
 						quizzes={quizzes} 
 					/> : (!isFetchingQuestion && question !== undefined) ? 
-					<QuizBody />
+					<QuizBody 
+						totalQuestions={totalQuestions}
+						question={question}
+					/>
 					: <div></div>
 				}
 			</div>       

@@ -33,7 +33,7 @@ class QABody extends React.Component {
 	}
 
 	// on question change, update local state userInput to Redux store's userAnswers[questionNum]
-	componentDidUpdate(prevProps, prevState) {
+	componentDidUpdate(prevProps) {
 		const { userAnswers } = this.props;
 
 		if (prevProps.questionBody.number !== this.props.questionBody.number) {
