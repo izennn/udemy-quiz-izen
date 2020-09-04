@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { updateChosenQuizId } from './redux/ActionCreators';
 
 import ChooseQuiz from './components/ChooseQuiz';
+import ResultsView from './components/ResultsView';
 import QuizBody from './containers/QuizBody';
 
 import { Header, Dimmer, Loader } from 'semantic-ui-react';
@@ -15,17 +16,30 @@ class App extends React.Component {
 		super()
 		this.state = {
 			url_header: `${hostname}${apiv}`,
-			quizzes: [],
+			quizzes: undefined,
+			allQuestions: undefined,
 			totalQuestions: undefined,
 			question: undefined,
-			isFetchingQuizzes: true,
+			isFetchingQuizzes: false,
+			isFetchingAllQuestions: false,
 			isFetchingQuestion: false
 		}
 		this.fetchQuizzes = this.fetchQuizzes.bind(this);
 		this.fetchPaginatedQuestion = this.fetchPaginatedQuestion.bind(this);
+		this.setIsFetchingAllQuestions = this.setIsFetchingAllQuestions.bind(this);
+		this.fetchAllQuestionsUnderQuiz = this.fetchAllQuestionsUnderQuiz.bind(this);
+	}
+
+	setIsFetchingAllQuestions = (value) => {
+		this.setState({
+			isFetchingAllQuestions: value
+		})
 	}
 
 	async componentDidMount() {
+		this.setState({
+			isFetchingQuizzes: true
+		})
 		this.fetchQuizzes()
 	}
 
@@ -39,6 +53,7 @@ class App extends React.Component {
 			this.fetchPaginatedQuestion(this.props.chosenQuizId, 1, null)
 		}
 	}
+
 	async fetchQuizzes() {
 		const { url_header } = this.state
 
@@ -48,11 +63,29 @@ class App extends React.Component {
 			const quizzes_body = await res.json();
 			if (quizzes_body !== undefined) {
 				this.setState({
+					isFetchingQuizzes: false,
 					quizzes: quizzes_body,
-					isFetchingQuizzes: false
 				})				
 			}
 		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	async fetchAllQuestionsUnderQuiz(quiz_id) {
+		const { url_header } = this.state;
+		const url = `${url_header}/quizzes/${quiz_id}/all_questions/`;
+
+		try {
+			const res = await fetch(url);
+			const all_questions = await res.json();
+			if (all_questions !== undefined) {
+				this.setState({
+					isFetchingAllQuestions: false,
+					allQuestions: all_questions
+				})
+			}
+		} catch(error) {
 			console.log(error)
 		}
 	}
@@ -84,10 +117,13 @@ class App extends React.Component {
 		const { chosenQuizId, updateChosenQuizId } = this.props;
 		const { 
 			quizzes, 
-			totalQuestions,
 			question,
+			allQuestions,
+			totalQuestions,
 			isFetchingQuizzes, 
-			isFetchingQuestion
+			isFetchingQuestion,
+			isFetchingAllQuestions,
+			userAnswers
 		} = this.state;
 		const overallAppStyle = {
 			height: '100%', 
@@ -104,20 +140,34 @@ class App extends React.Component {
 					style={{textAlign: 'center'}}
 					content={chosenQuizId === undefined ? "Choose Quiz" : quizzes[chosenQuizId - 1].title}
 				/>
+
 				<Dimmer active={isFetchingQuizzes} inverted>
 					<Loader inverted>Fetching Quizzes</Loader>
 				</Dimmer>
+				<Dimmer active={isFetchingQuestion} inverted>
+					<Loader inverted>Fetching Question</Loader>
+				</Dimmer>
+				<Dimmer active={isFetchingAllQuestions} inverted>
+					<Loader inverted>Fetching Results</Loader>
+				</Dimmer>
+
 				{ (!isFetchingQuizzes && chosenQuizId === undefined) ?
 					<ChooseQuiz 
 						quizzes={quizzes} 
 						updateChosenQuizId={updateChosenQuizId}
-					/> : (!isFetchingQuestion && question !== undefined) ? 
+					/> : (!isFetchingQuestion && question !== undefined && allQuestions === undefined) ? 
 					<QuizBody 
 						totalQuestions={totalQuestions}
 						question={question}
 						fetchPaginatedQuestion={this.fetchPaginatedQuestion}
-					/>
-					: <div></div>
+						setIsFetchingAllQuestions={this.setIsFetchingAllQuestions}
+						fetchAllQuestionsUnderQuiz={this.fetchAllQuestionsUnderQuiz}
+					/> : (allQuestions !== undefined) ? 
+					<ResultsView
+						allQuestions={allQuestions}
+						userAnswers={userAnswers}
+					/> :
+					<div></div>
 				}
 			</div>       
 		);    
@@ -126,7 +176,8 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
 	return {
-		chosenQuizId: state.chosenQuizId
+		chosenQuizId: state.chosenQuizId,
+		userAnswers: state.userAnswers,
 	};
 }
 

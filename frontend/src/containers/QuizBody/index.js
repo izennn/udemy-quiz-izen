@@ -81,13 +81,15 @@ class QuizBody extends React.Component {
 
 	render() {
 		const { 
-			totalQuestions,
-			reviewList, 
-			userAnswers, 
-			updateReviewList, 
-			updateUserAnswers,
 			chosenQuizId,
-			fetchPaginatedQuestion 
+			totalQuestions,
+			userAnswers, 
+			updateUserAnswers,
+			reviewList, 
+			updateReviewList, 
+			fetchPaginatedQuestion,
+			setIsFetchingAllQuestions,
+			fetchAllQuestionsUnderQuiz,
 		} = this.props;
 		const {
 			questionBody
@@ -96,14 +98,16 @@ class QuizBody extends React.Component {
 		return (
 			<div style={quizBodyStyle}>
 				<QABody 
+					chosenQuizId={chosenQuizId}
 					totalQuestions={totalQuestions}
 					questionBody={questionBody} 
 					userAnswers={userAnswers}
 					updateUserAnswers={updateUserAnswers}
 					reviewList={reviewList} 
 					updateReviewList={updateReviewList}
-					chosenQuizId={chosenQuizId}
 					fetchPaginatedQuestion={fetchPaginatedQuestion}
+					setIsFetchingAllQuestions={setIsFetchingAllQuestions}
+					fetchAllQuestionsUnderQuiz={fetchAllQuestionsUnderQuiz}
 				/>
 			</div>
 		)

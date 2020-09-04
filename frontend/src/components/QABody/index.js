@@ -30,6 +30,9 @@ const ConfirmSubmitModal = ({
 	totalQuestions,
 	userAnswers,
 	reviewList,
+	chosenQuizId,
+	setIsFetchingAllQuestions,
+	fetchAllQuestionsUnderQuiz
 }) => {
 
 	function getUnasweredCount() {
@@ -65,7 +68,16 @@ const ConfirmSubmitModal = ({
 			</Modal.Content>
 			<Modal.Actions>
 				<Button basic color='red' content='Cancel' onClick={() => setOpen(false)} />
-				<Button basic color='green' content='Confirm' onClick={() => setOpen(false)} />
+				<Button 
+					basic 
+					color='green' 
+					content='Confirm' 
+					onClick={() => {
+						setIsFetchingAllQuestions(true);
+						fetchAllQuestionsUnderQuiz(chosenQuizId);
+						setOpen(false)
+					}} 
+				/>
 			</Modal.Actions>
 		</Modal>
 	)
@@ -168,6 +180,8 @@ class QABody extends React.Component {
 			updateUserAnswers,
 			chosenQuizId,
 			fetchPaginatedQuestion,
+			setIsFetchingAllQuestions,
+			fetchAllQuestionsUnderQuiz,
 		} = this.props;
 		const {
 			number,
@@ -191,6 +205,9 @@ class QABody extends React.Component {
 					totalQuestions={totalQuestions}
 					userAnswers={userAnswers}
 					reviewList={reviewList}
+					chosenQuizId={chosenQuizId}
+					setIsFetchingAllQuestions={setIsFetchingAllQuestions}
+					fetchAllQuestionsUnderQuiz={fetchAllQuestionsUnderQuiz}
 				/>
 				<div id="questionPromptDiv" style={{minHeight: '70px', maxHeight: '70px', overflowY: 'auto'}}>
 					<Header as='h3'>
