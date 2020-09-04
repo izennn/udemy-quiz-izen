@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateReviewList, updateUserAnswers } from '../../redux/ActionCreators';
 import QABody from '../../components/QABody';
-import BottomBar from '../../components/BottomBar';
 
 const quizBodyStyle = {
 	width: '100%',
@@ -12,67 +11,6 @@ const quizBodyStyle = {
 	flexDirection: 'column',
 	paddingLeft: '20%',
 	paddingRight: '20%',
-	// border: '1px solid blue'
-}
-
-const mockQuestionBody = {
-	number: 1,
-	question: "Which of these are animals?",
-	answers: {
-		A: "ELectric Bugaloo",
-		B: "Sea Lion",
-		C: "Chiropractor",
-		D: "Madagascar",
-		E: "Elephant"
-	},
-	correct: ["B", "E"]
-}
-
-const mockQuestionBody2 = {
-	number: 2,
-	question: "Which movie does NOT star Brad Pitt?",
-	answers: {
-		A: "Hateful Eight",
-		B: "Se7en",
-		C: "Fight Club",
-		D: "Once Upon a Time in Hollywood"
-	},
-	correct: ["A"]
-}
-
-const mockQuestionBody3 = {
-    "count": 5,
-    "next": "http://localhost:8000/api/v2/quizzes/1/questions/?page=2",
-    "previous": null,
-    "results": [
-        {
-            "id": 1,
-            "quiz": 1,
-            "prompt": "Which of these is a reptile?",
-            "answers": [
-                {
-                    "id": 1,
-                    "text": "Homo Sapians",
-                    "correct": false
-                },
-                {
-                    "id": 2,
-                    "text": "Red Pandas",
-                    "correct": false
-                },
-                {
-                    "id": 3,
-                    "text": "Water Bears",
-                    "correct": false
-                },
-                {
-                    "id": 4,
-                    "text": "Komodo Dragon",
-                    "correct": true
-                }
-            ]
-        }
-    ]
 }
 
 class QuizBody extends React.Component {
@@ -83,7 +21,9 @@ class QuizBody extends React.Component {
 				number: undefined,
 				question: '',
 				answers: {},
-				correct: []
+				correct: [],
+				next: '',
+				prev: ''
 			}
 		}
 		this.udpateQuestionBodyFromProps = this.udpateQuestionBodyFromProps.bind(this);
@@ -112,7 +52,9 @@ class QuizBody extends React.Component {
 				number: question.page_number,
 				question: questionData.prompt,
 				answers: newAnswers,
-				correct: newCorrectList
+				correct: newCorrectList,
+				next: question.links.next,
+				prev: question.links.prev
 			}
 
 			this.setState({
@@ -138,30 +80,29 @@ class QuizBody extends React.Component {
 
 	render() {
 		const { 
-			question,
 			totalQuestions,
 			reviewList, 
 			userAnswers, 
 			updateReviewList, 
-			updateUserAnswers 
+			updateUserAnswers,
+			chosenQuizId,
+			fetchPaginatedQuestion 
 		} = this.props;
 		const {
 			questionBody
 		} = this.state;
 
-		console.log(questionBody)
 		return (
 			<div style={quizBodyStyle}>
 				<QABody 
+					totalQuestions={totalQuestions}
 					questionBody={questionBody} 
 					userAnswers={userAnswers}
 					updateUserAnswers={updateUserAnswers}
-				/>
-				<BottomBar 
-					totalQuestions={totalQuestions}
 					reviewList={reviewList} 
 					updateReviewList={updateReviewList}
-					questionNum={question.page_number}
+					chosenQuizId={chosenQuizId}
+					fetchPaginatedQuestion={fetchPaginatedQuestion}
 				/>
 			</div>
 		)
@@ -171,7 +112,8 @@ class QuizBody extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		reviewList: state.reviewList,
-		userAnswers: state.userAnswers
+		userAnswers: state.userAnswers,
+		chosenQuizId: state.chosenQuizId
 	};
 }
 

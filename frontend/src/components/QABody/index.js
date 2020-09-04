@@ -1,13 +1,16 @@
 import React from 'react';
+import BottomBar from '../BottomBar';
+
 import { Header, Menu } from 'semantic-ui-react';
 
-const RenderQuestions = ({number, answers, userInput, handleClick}) => {
+const RenderQuestions = (props) => {
+	const { answers, userInput, handleClick } = props;
 	const keys = Object.keys(answers);
 
 	return (
 		<Menu vertical fluid>
 			{ keys.map((key, keyID) => {
-					return (
+				return (
 					<Menu.Item
 						key={keyID}
 						onClick={() => handleClick(key)}
@@ -15,7 +18,7 @@ const RenderQuestions = ({number, answers, userInput, handleClick}) => {
 					>
 						{key}. {answers[key]}
 					</Menu.Item>
-					)
+				)
 			})}
 		</Menu>
 	)
@@ -26,6 +29,7 @@ class QABody extends React.Component {
 		super(props);
 		this.state = {
 			userInput: [],
+			hasMultipleAnsewrs: false
 		}
 		this.handleAnswerClick = this.handleAnswerClick.bind(this);
 		this.handleSingleChoice = this.handleSingleChoice.bind(this);
@@ -34,41 +38,43 @@ class QABody extends React.Component {
 
 	// on question change, update local state userInput to Redux store's userAnswers[questionNum]
 	componentDidUpdate(prevProps) {
-		const { userAnswers } = this.props;
+		const { questionBody, userAnswers } = this.props;
 
-		if (prevProps.questionBody.number !== this.props.questionBody.number) {
+		if (prevProps.questionBody !== this.props.questionBody) {
+			var previousUserInput = []
+
+			if (userAnswers[questionBody.number - 1]) {
+				previousUserInput = userAnswers[questionBody.number - 1]
+			}
+
 			this.setState({ 
-				userInput: userAnswers[this.props.questionBody.number]
+				userInput: previousUserInput,
+				hasMultipleAnsewrs: this.props.questionBody.correct.length > 1
 			})
 		}
 	}
 
 	handleSingleChoice(inputAnswer) {
-		const { questionBody, userAnswers, updateUserAnswers } = this.props;
-		const { correct, number } = questionBody;
 		const { userInput } = this.state;
 		const newUserInput = [];
 
-		// 3 scenarios: user has not input yet, user clicked the same choice, and user changing choice
+		// 2 scenarios: user has not input yet, or user has already inputted something
 		if (userInput.length === 0) {
 			newUserInput.push(inputAnswer);
-		} else if (userInput[0] === inputAnswer){
-			newUserInput.push(...userInput);
 		} else {
 			newUserInput[0] = inputAnswer
 		}
 
-		// update Redux store's userAnswer
-		const newUserAnswers = {...userAnswers};
-		newUserAnswers[number] = newUserInput;
-		updateUserAnswers(newUserAnswers)
+		this.setState({
+			userInput: newUserInput
+		})
 	}
 
 	handleMultChoice(inputAnswer) {
-		const { questionBody, userAnswers, updateUserAnswers } = this.props;
-		const { correct, number } = questionBody;
+		const { questionBody } = this.props;
 		const { userInput } = this.state;
-		const newUserInput = []
+		const { correct } = questionBody;
+		var newUserInput = []
 		newUserInput.push(...userInput);
 
 		// for mult choice if user clicks the same answer, that answer is removed from user input list
@@ -76,24 +82,22 @@ class QABody extends React.Component {
 		if (inputAnswerIndex !== -1) {
 			newUserInput.splice(inputAnswerIndex, 1);
 		} else {
-			// when input answer is NOT already in user input, we have to beware of userInput.length vs correct.length
+			// only push input answer if user input length < correct length
 			if (userInput.length < correct.length) {
-			// just add it!
-			newUserInput.push(inputAnswer)
-			} // otherwise we just do nothing!    
+				newUserInput.push(inputAnswer)
+			}     
 		}
 
-		// update redux store's user answers
-		const newUserAnswers = {...userAnswers};
-		newUserAnswers[number] = newUserInput;
-		updateUserAnswers(newUserAnswers)
+		this.setState({
+			userInput: newUserInput
+		})
 	}
 
 	handleAnswerClick(inputAnswer) {
-		const { questionBody } = this.props;
+		const { hasMultipleAnsewrs } = this.state;
 
 		// 2 separate cases: single choice vs multiple choice
-		if (questionBody.correct.length === 1) {
+		if (!hasMultipleAnsewrs) {
 			this.handleSingleChoice(inputAnswer)
 		} else {
 			this.handleMultChoice(inputAnswer)
@@ -101,28 +105,71 @@ class QABody extends React.Component {
 	}
 
 	render() {
+		const { 
+			totalQuestions,
+			reviewList,
+			updateReviewList,
+			userAnswers,
+			updateUserAnswers,
+			chosenQuizId,
+			fetchPaginatedQuestion,
+		} = this.props;
 		const {
 			number,
 			question,
 			answers,
-			correct
+			correct,
+			next,
+			prev
 		} = this.props.questionBody;
-		const { userInput } = this.state;
+		const { 
+			userInput, 
+			hasMultipleAnsewrs 
+		} = this.state;
 
 		return (
 			<div>
-				<div>
-					<Header>
+				<div id="questionPromptDiv" style={{minHeight: '70px', maxHeight: '70px', overflowY: 'auto'}}>
+					<Header as='h3'>
 					{number}. {question}
-					{correct.length > 1 && <Header.Subheader>(CHOOSE {correct.length}.)</Header.Subheader>}
+					{ hasMultipleAnsewrs && 
+						<Header.Subheader>(Choose {correct.length}.)</Header.Subheader>
+					}
 					</Header>
 				</div>
-				<RenderQuestions 
-					number={number} 
-					answers={answers} 
-					userInput={userInput} 
-					handleClick={this.handleAnswerClick} 
-				/>
+				<div
+					style = {{
+						marginTop: '0.5em',
+						height: '100%',
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
+					}}
+				>
+					<div style={{minHeight: '180px'}}>
+						<RenderQuestions 
+							number={number} 
+							answers={answers} 
+							userInput={userInput} 
+							handleClick={this.handleAnswerClick} 
+						/>							
+					</div>
+
+					<BottomBar 
+						questionNum={number}
+						totalQuestions={totalQuestions}
+						reviewList={reviewList}
+						updateReviewList={updateReviewList}
+						userInput={userInput}
+						userAnswers={userAnswers}
+						updateUserAnswers={updateUserAnswers}
+						nextLink={next}
+						prevLink={prev}
+						chosenQuizId={chosenQuizId}
+						fetchPaginatedQuestion={fetchPaginatedQuestion}
+					/>					
+				</div>
+
 			</div>
 		);
 	}

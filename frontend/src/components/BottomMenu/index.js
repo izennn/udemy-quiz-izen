@@ -1,42 +1,43 @@
 import React from 'react';
 import { Menu } from 'semantic-ui-react';
 
-const RenderMenuItems = ({questionNum, totalQuestions, reviewList}) => {
-	const iterateArray = []
-	for (var i = 1; i <= totalQuestions; i++) {
-		iterateArray.push(i);    
-	}
-
-	return (
-		<React.Fragment>
-			{ iterateArray.map((i) => {
-			return (
-				<Menu.Item name={`${i}`} key={i} active={questionNum === i} color={reviewList.includes(i) ? 'orange' : null} />
-			)
-			})}
-		</React.Fragment>
-	)
-}
-
 class BottomMenu extends React.Component {
-	constructor(props) {
-		super(props);
+	constructor() {
+		super();
 		this.state = {
-			activeItem: null,
+			activeItem: null
 		}
 	}
 
 	render() {
-		const { questionNum, reviewList, totalQuestions } = this.props;
-		const { activeItem } = this.state;
+		const { 
+			totalQuestions,
+			questionNum, 
+			reviewList, 
+			chosenQuizId,
+			updateUserAnswersAndFetch,
+		} = this.props;
+
+		var iterateArray = []
+		for (var i = 1; i <= totalQuestions; i++) {
+			iterateArray.push(i);    
+		}
 
 		return (
 			<Menu>
-				<RenderMenuItems 
-					questionNum={questionNum} 
-					totalQuestions={totalQuestions} 
-					reviewList={reviewList} 
-				/>
+				{ iterateArray.map((i) => {
+					return (
+						<Menu.Item 
+							key={i}
+							name={`${i}`} 
+							active={questionNum === i} 
+							onClick={() => updateUserAnswersAndFetch(chosenQuizId, i, null)}
+							style={{
+								backgroundColor: reviewList.includes(i) ? 'orange' : null
+							}}
+						/>
+					)
+				})}
 			</Menu>
 		)
 	}

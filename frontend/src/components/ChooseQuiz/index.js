@@ -1,8 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { updateChosenQuizId } from '../../redux/ActionCreators';
 
-import { Card, Header, } from 'semantic-ui-react';
+import { Card } from 'semantic-ui-react';
 
 const RenderQuizCards = (props) => {
 	const { quizzes, updateChosenQuizId } = props
@@ -60,11 +58,4 @@ class ChooseQuiz extends React.Component {
 	}
 }
 
-const mapDispatchToProps = (dispatch) => ({
-	updateChosenQuizId: (newQuizId) => dispatch(updateChosenQuizId(newQuizId))
-})
-
-export default connect(
-	null,
-	mapDispatchToProps
-)(ChooseQuiz);
+export default ChooseQuiz;

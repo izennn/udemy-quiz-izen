@@ -1,6 +1,81 @@
 import React from 'react';
 import BottomMenu from '../BottomMenu';
-import { Container, Button, Label } from 'semantic-ui-react';
+import { Button, Label } from 'semantic-ui-react';
+
+const RenderNavAndMenuButtons = (props) => {
+	const {
+		chosenQuizId,
+		questionNum,
+		totalQuestions,
+		reviewList,
+		nextLink,
+		prevLink,
+		userAnswers,
+		updateUserAnswersAndFetch
+	} = props;	
+	
+	return (
+		<div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+			<Button 
+				id="prevButton"
+				icon='angle double left' 
+				disabled={questionNum === 1} 
+				onClick={() => updateUserAnswersAndFetch(null, null, prevLink)}
+			/>
+			<div style={{width: '0.5em'}} />
+			<BottomMenu 
+				chosenQuizId={chosenQuizId}
+				totalQuestions={totalQuestions}
+				questionNum={questionNum} 
+				reviewList={reviewList} 
+				updateUserAnswersAndFetch={updateUserAnswersAndFetch}
+				userAnswers={userAnswers}
+			/>
+			<div style={{width: '0.5em'}} />
+			<Button 
+				id="nextButton"
+				icon='angle double right' 
+				disabled={questionNum === totalQuestions}
+				onClick={() => updateUserAnswersAndFetch(null, null, nextLink)}
+			/>
+		</div>
+	)
+}
+
+const RenderFlagAndSubmit = (props) => {
+	const {
+		handleFlagClick,
+		hoveringOverFlag,
+		setHoveringOverFlag,
+		reviewList,
+		questionNum
+	} = props
+
+	return (
+		<div 
+			style={{
+				dispaly: 'flex', 
+				flexDirection: 'row', 
+				justifyContent: 'space-between',
+			}}
+		>
+			<Button 
+				id="reviewFlagButton"
+				icon='flag outline'             
+				onClick={() => handleFlagClick(questionNum)}
+				onMouseOver={() => setHoveringOverFlag(true)}
+				onMouseLeave={() => setHoveringOverFlag(false)}
+				style={{backgroundColor: reviewList.includes(questionNum) ? 'orange' : null}}
+			/>
+			<Button
+				id='submitButton'
+				content='Submit'
+				onClick={() => console.log("Submit!")}
+			/>
+		</div>
+	)
+}
+
 
 class BottomBar extends React.Component {
 	constructor(props) {
@@ -9,66 +84,94 @@ class BottomBar extends React.Component {
 			hoveringOverFlag: false
 		}
 		this.handleFlagClick = this.handleFlagClick.bind(this);
+		this.setHoveringOverFlag = this.setHoveringOverFlag.bind(this);
 	}
 
-	// toggle the input question number for review
-	handleFlagClick(questionNum) {
+	// toggle review detail for specific question number
+	handleFlagClick = (questionNum) => {
 		const { reviewList, updateReviewList } = this.props;
 		const newReviewList = [];
-		newReviewList.push(...reviewList);
-
 		const indexOfQuestion = reviewList.indexOf(questionNum);
+
+		newReviewList.push(...reviewList);
 		if (indexOfQuestion !== -1) {
 			newReviewList.splice(indexOfQuestion, 1);
 		} else {
 			newReviewList.push(questionNum)
+		}
+
+		updateReviewList(newReviewList)
 	}
 
-	updateReviewList(newReviewList);
+	setHoveringOverFlag = (value) => {
+		this.setState({
+			hoveringOverFlag: value
+		});
+	}
+
+	updateUserAnswersAndFetch = (quiz_id, pageNumber, nextOrPrevLink) => {
+		const {
+			userInput,
+			userAnswers,
+			updateUserAnswers,
+			questionNum,
+			fetchPaginatedQuestion
+		} = this.props;
+
+		var newUserAnswers = {...userAnswers}
+		newUserAnswers[questionNum - 1] = userInput
+		updateUserAnswers(newUserAnswers)			
+		fetchPaginatedQuestion(quiz_id, pageNumber, nextOrPrevLink)
 	}
 
 	render() {
-		const { reviewList, questionNum, totalQuestions } = this.props;
+		const { 
+			totalQuestions,
+			questionNum, 
+			nextLink,
+			prevLink,
+			reviewList, 
+			chosenQuizId,
+			userAnswers,
+		} = this.props;
 		const { hoveringOverFlag } = this.state;
 
 		return (
-			<Container style={{marginTop: '1.5em', display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-				<div>
-				<BottomMenu questionNum={questionNum} reviewList={reviewList} totalQuestions={totalQuestions}/>
-				</div>
-				<div style={{display: 'flex', flexDirection: 'column'}}>
-				<div>
-					<Button 
-						size='large' 
-						icon='flag outline'             
-						color={reviewList.includes(questionNum) ? "orange" : null} 
-						onClick={() => this.handleFlagClick(questionNum)}
-						onMouseOver={() => this.setState({hoveringOverFlag: true})}
-						onMouseLeave={() => this.setState({hoveringOverFlag: false})}
+			<div 
+				style={{
+					marginTop: '1.5em', 
+					display: 'flex', 
+					flexDirection: 'row', 
+					justifyContent: 'space-between',
+					alignItems: 'center',
+				}}
+			>
+				<div style={{width: '60%'}}>
+					<RenderNavAndMenuButtons
+						chosenQuizId={chosenQuizId}
+						questionNum={questionNum}
+						totalQuestions={totalQuestions}
+						reviewList={reviewList}
+						handleFlagClick={this.handleFlagClick}
+						hoveringOverFlag={hoveringOverFlag}
+						setHoveringOverFlag={this.setHoveringOverFlag}
+						nextLink={nextLink}
+						prevLink={prevLink}
+						userAnswers={userAnswers}
+						updateUserAnswersAndFetch={this.updateUserAnswersAndFetch}
 					/>
-					<Button 
-						size='large' 
-						disabled={questionNum === 1} 
-						icon='angle double left' 
-					/>
-					{ questionNum === totalQuestions ?
-						<Button
-							size='large'
-							content='Submit'
-						/> : 
-						<Button 
-							size='large' 
-							icon='angle double right' 
-						/>   
-					}
 				</div>
-				{ hoveringOverFlag && 
-					<Label basic color='orange' style={{marginTop: '1em'}}>
-						Mark for Review
-					</Label>
-				}
+				<div>
+					<RenderFlagAndSubmit
+						handleFlagClick={this.handleFlagClick}
+						hoveringOverFlag={hoveringOverFlag}
+						setHoveringOverFlag={this.setHoveringOverFlag}
+						reviewList={reviewList}
+						questionNum={questionNum}
+					/>					
 				</div>
-			</Container>
+			
+			</div>
 		);    
 	}
 }
