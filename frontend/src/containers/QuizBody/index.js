@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateReviewList, updateUserAnswers } from '../../redux/ActionCreators';
+
 import QABody from '../../components/QABody';
 
 const quizBodyStyle = {
@@ -24,9 +25,23 @@ class QuizBody extends React.Component {
 				correct: [],
 				next: '',
 				prev: ''
-			}
+			},
 		}
 		this.udpateQuestionBodyFromProps = this.udpateQuestionBodyFromProps.bind(this);
+	}
+
+	componentDidMount() {
+		const { question } = this.props;
+
+		this.udpateQuestionBodyFromProps(question)
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		const { question } = this.props;
+
+		if (prevProps.question !== this.props.question) {
+			this.udpateQuestionBodyFromProps(question)
+		}
 	}
 
 	udpateQuestionBodyFromProps(question) {
@@ -61,20 +76,6 @@ class QuizBody extends React.Component {
 				...this.state,
 				questionBody: newQuestionBody
 			})
-		}
-	}
-
-	componentDidMount() {
-		const { question } = this.props;
-
-		this.udpateQuestionBodyFromProps(question)
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		const { question } = this.props;
-
-		if (prevProps.question !== this.props.question) {
-			this.udpateQuestionBodyFromProps(question)
 		}
 	}
 
