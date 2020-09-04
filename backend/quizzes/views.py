@@ -72,13 +72,6 @@ class QuizViewSet(viewsets.ModelViewSet):
 	queryset = models.Quiz.objects.all()
 	serializer_class = serializers.QuizSerializer
 
-	# @property
-	# def paginator(self):
-	# 	self._paginator = super(QuizViewSet, self).paginator
-	# 	if self.action != 'questions':
-	# 		self._paginator = None
-	# 	return self._paginator
-
 	@property
 	def paginator(self):
 		self._paginator = super(QuizViewSet, self).paginator
@@ -100,6 +93,15 @@ class QuizViewSet(viewsets.ModelViewSet):
 			questions,
 			many=True
 		)		
+		return Response(serializer.data)
+
+	@action(detail=True,methods=['get'])
+	def all_questions(self, request, pk=None):
+		questions = models.Question.objects.filter(quiz_id=pk)
+		serializer = serializers.QuestionSerializer(
+			questions,
+			many=True
+		)
 		return Response(serializer.data)
 
 class QuestionViewSet(viewsets.ModelViewSet):

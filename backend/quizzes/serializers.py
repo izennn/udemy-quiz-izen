@@ -29,7 +29,6 @@ class QuizSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
 	class Meta:
 		fields = [
-			'id',
 			'text',
 			'correct',
 		]
