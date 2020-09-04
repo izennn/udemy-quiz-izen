@@ -1,6 +1,6 @@
 import React from 'react';
 import BottomMenu from '../BottomMenu';
-import { Button, Label } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 
 const RenderNavAndMenuButtons = (props) => {
 	const {
@@ -44,12 +44,21 @@ const RenderNavAndMenuButtons = (props) => {
 
 const RenderFlagAndSubmit = (props) => {
 	const {
+		userInput,
+		userAnswers,
+		updateUserAnswers,
 		handleFlagClick,
-		hoveringOverFlag,
-		setHoveringOverFlag,
 		reviewList,
-		questionNum
+		questionNum,
+		setIsConfirmModalOpen
 	} = props
+
+	function updateUnserAnswersAndOpenModal() {
+		var newUserAnswers = {...userAnswers}
+		newUserAnswers[questionNum - 1] = userInput
+		updateUserAnswers(newUserAnswers)
+		setIsConfirmModalOpen(true)
+	}
 
 	return (
 		<div 
@@ -63,14 +72,14 @@ const RenderFlagAndSubmit = (props) => {
 				id="reviewFlagButton"
 				icon='flag outline'             
 				onClick={() => handleFlagClick(questionNum)}
-				onMouseOver={() => setHoveringOverFlag(true)}
-				onMouseLeave={() => setHoveringOverFlag(false)}
 				style={{backgroundColor: reviewList.includes(questionNum) ? 'orange' : null}}
 			/>
 			<Button
 				id='submitButton'
 				content='Submit'
-				onClick={() => console.log("Submit!")}
+				onClick={() => {
+					updateUnserAnswersAndOpenModal()
+				}}
 			/>
 		</div>
 	)
@@ -80,11 +89,7 @@ const RenderFlagAndSubmit = (props) => {
 class BottomBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={
-			hoveringOverFlag: false
-		}
 		this.handleFlagClick = this.handleFlagClick.bind(this);
-		this.setHoveringOverFlag = this.setHoveringOverFlag.bind(this);
 	}
 
 	// toggle review detail for specific question number
@@ -101,12 +106,6 @@ class BottomBar extends React.Component {
 		}
 
 		updateReviewList(newReviewList)
-	}
-
-	setHoveringOverFlag = (value) => {
-		this.setState({
-			hoveringOverFlag: value
-		});
 	}
 
 	updateUserAnswersAndFetch = (quiz_id, pageNumber, nextOrPrevLink) => {
@@ -132,9 +131,11 @@ class BottomBar extends React.Component {
 			prevLink,
 			reviewList, 
 			chosenQuizId,
+			userInput,
 			userAnswers,
+			updateUserAnswers,
+			setIsConfirmModalOpen
 		} = this.props;
-		const { hoveringOverFlag } = this.state;
 
 		return (
 			<div 
@@ -153,8 +154,6 @@ class BottomBar extends React.Component {
 						totalQuestions={totalQuestions}
 						reviewList={reviewList}
 						handleFlagClick={this.handleFlagClick}
-						hoveringOverFlag={hoveringOverFlag}
-						setHoveringOverFlag={this.setHoveringOverFlag}
 						nextLink={nextLink}
 						prevLink={prevLink}
 						userAnswers={userAnswers}
@@ -163,11 +162,13 @@ class BottomBar extends React.Component {
 				</div>
 				<div>
 					<RenderFlagAndSubmit
+						userInput={userInput}
+						userAnswers={userAnswers}
+						updateUserAnswers={updateUserAnswers}
 						handleFlagClick={this.handleFlagClick}
-						hoveringOverFlag={hoveringOverFlag}
-						setHoveringOverFlag={this.setHoveringOverFlag}
 						reviewList={reviewList}
 						questionNum={questionNum}
+						setIsConfirmModalOpen={setIsConfirmModalOpen}
 					/>					
 				</div>
 			
