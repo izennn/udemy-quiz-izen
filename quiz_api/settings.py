@@ -84,8 +84,7 @@ DATABASES = {}
 DATABASES['default'] = dj_database_url.parse(postgres_url, conn_max_age=None)
 # DATABASES = {
 #     'default': {
-#         # 'ENGINE': 'django.db.backends.sqlite3',
-#         'ENGINE': 'django.db.backends.postgresql',
+#         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
@@ -129,6 +128,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_FILES_DIR = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 # REST Framework
 REST_FRAMEWORK = {
