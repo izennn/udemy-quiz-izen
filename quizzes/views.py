@@ -4,7 +4,6 @@ from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from quiz_api.pagination import PaginationWithPageNumber
 from . import models, serializers
 
 class ListCreateQuiz(generics.ListCreateAPIView):
