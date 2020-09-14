@@ -40,6 +40,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 		model = models.Answer
 
 class QuestionSerializer(serializers.ModelSerializer):
+	quiz_title = serializers.CharField(source='quiz.title', read_only=True)
 	answers = AnswerSerializer(
 		read_only=True,
 		many=True
@@ -48,7 +49,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 	class Meta:
 		fields = [
 			'id',
-			'quiz',
+			'quiz_title',
 			'prompt',
 			'answers'
 		]

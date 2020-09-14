@@ -83,14 +83,15 @@ WSGI_APPLICATION = 'quiz_api.wsgi.application'
 postgres_url = 'postgres://rkbvpbvhmhwpkl:dfdbee0878911220a024455cd4b11c5f66984a1607c8b2be30a7f1ce58d5e090@ec2-52-86-116-94.compute-1.amazonaws.com:5432/dbt1750f8sgc33'
 DATABASES = {}
 DATABASES['default'] = dj_database_url.parse(postgres_url, conn_max_age=None)
-# dj_database_url parses a given URL into something like this:
-# {
-#     'ENGINE': 'django.db.backends.postgresql',
-#     'NAME': '',
-#     'USER': '<your-user>',
-#     'PASSWORD': '<your-password>',
-#     'HOST': 'ec2-52-86-116-94.compute-1.amazonaws.com',
-#     'PORT': '5432'
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'sqlite3.db',                      # Or path to database file if using sqlite3.
+#         'USER': '',                      # Not used with sqlite3.
+#         'PASSWORD': '',                  # Not used with sqlite3.
+#         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#     }
 # }
 
 
@@ -130,12 +131,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/static/'
+
+# The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Extra places for collectstatic to find static files.
 STATIC_FILES_DIR = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # REST Framework
 REST_FRAMEWORK = {
