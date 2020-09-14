@@ -27,7 +27,7 @@ SECRET_KEY = 'd%m-1^1j&=11q41vn3&83l&6x@mv6k#gux7qn&cc4vey^$_hp2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['izen-quiz-backend.herokuapp.com', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['izen-quiz-backend.herokuapp.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -83,11 +83,14 @@ WSGI_APPLICATION = 'quiz_api.wsgi.application'
 postgres_url = 'postgres://rkbvpbvhmhwpkl:dfdbee0878911220a024455cd4b11c5f66984a1607c8b2be30a7f1ce58d5e090@ec2-52-86-116-94.compute-1.amazonaws.com:5432/dbt1750f8sgc33'
 DATABASES = {}
 DATABASES['default'] = dj_database_url.parse(postgres_url, conn_max_age=None)
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
+# dj_database_url parses a given URL into something like this:
+# {
+#     'ENGINE': 'django.db.backends.postgresql',
+#     'NAME': '',
+#     'USER': '<your-user>',
+#     'PASSWORD': '<your-password>',
+#     'HOST': 'ec2-52-86-116-94.compute-1.amazonaws.com',
+#     'PORT': '5432'
 # }
 
 
@@ -142,6 +145,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_PAGINATION_CLASS': 'quiz_api.pagination.PaginationWithPageNumber',
     'PAGE_SIZE': 5
