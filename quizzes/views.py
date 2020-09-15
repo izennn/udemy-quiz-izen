@@ -109,7 +109,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
 	@action(detail=True,methods=['get'])
 	def answers(self, request, pk=None):
-		answers = models.Answers.objects.filter(question_id=pk)
+		answers = models.Answer.objects.filter(question_id=pk)
 		serializer = serializers.AnswerSerializer(
 			answers,
 			many=True,
@@ -119,3 +119,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 class AnswerViewSet(viewsets.ModelViewSet):
 	queryset = models.Answer.objects.all()
 	serializer_class = serializers.AnswerSerializer
+
+	@property
+	def paginator(self):
+		self._paginator = None
