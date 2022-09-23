@@ -9,7 +9,7 @@ djangorestframework==3.11.1
 gunicorn==20.0.4
 markdown2==2.3.9
 peewee==3.13.3
-protobuf==3.12.4
+protobuf==3.18.3
 psycopg2==2.8.6
 python-dateutil==2.8.1
 pytz==2020.1
